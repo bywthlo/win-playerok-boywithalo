@@ -532,12 +532,29 @@
         // Basic Protection (Optional, keeps casual users from messing up)
         document.addEventListener('contextmenu', event => event.preventDefault());
 
+        // Advanced Anti-Inspect Measures
+
+        // 2. Trigger Error on Forbidden Actions
+        const nukeContent = () => {
+            if (document.body.innerText.includes('Error: Not Authorized')) return;
+            document.body.innerHTML = `
+                <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;background:#0f0518;color:#ff4444;font-family:'Inter',sans-serif;text-align:center;padding:2rem;">
+                    <div style="font-size:4rem;margin-bottom:1rem;">🚫</div>
+                    <h1 style="font-size:2.5rem;margin-bottom:1rem;">Error: Not Authorized</h1>
+                    <p style="color:#a0a0a0;font-size:1.2rem;">Developer tools are not allowed on this page.</p>
+                    <button onclick="window.location.reload()" style="margin-top:2rem;padding:0.8rem 2rem;background:#ff4444;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Reload Page</button>
+                </div>
+            `;
+        };
+
         document.addEventListener('keydown', function (e) {
-            // Prevent F12, Ctrl+Shift+I, Ctrl+U
-            if (e.keyCode == 123 ||
-                (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 67 || e.keyCode == 74)) ||
-                (e.ctrlKey && e.keyCode == 85)) {
+            // Prevent F12, Ctrl+Shift+I, Ctrl+U, Ctrl+Shift+C, Ctrl+S
+            if (e.keyCode == 123 || // F12
+                (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 67 || e.keyCode == 74)) || // Ctrl+Shift+I/C/J
+                (e.ctrlKey && e.keyCode == 85) || // Ctrl+U
+                (e.ctrlKey && e.keyCode == 83)) { // Ctrl+S
                 e.preventDefault();
+                nukeContent(); // Show error screen on attempt
                 return false;
             }
         });
